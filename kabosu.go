@@ -1,6 +1,7 @@
 package main
 
 import (
+    "os"
     "log"
     "os/exec"
     "net/http"
@@ -24,8 +25,8 @@ func main() {
     // Webhook
     m.Post("/", func (ctx *macaron.Context) {
         // Check it was a push event
-        if (ctx.Header().Get("X-GitHub-Event") == "push") {
-            body, _ := ioutil.ReadAll(ctx.Req.Body)
+        if (ctx.Req.Header.Get("X-GitHub-Event") == "push") {
+            body, _ := ioutil.ReadAll(ctx.Req.Body().ReadCloser())
 
             var res github.PushEvent
             json.Unmarshal(body, &res)
@@ -33,9 +34,13 @@ func main() {
             log.Println(*res.Repo.FullName)
 
             if (config.Section("services").HasKey(*res.Repo.FullName)) {
+                log.Println(config.Section("services").Key(*res.Repo.FullName).String())
+
                 cmd := exec.Command("git", "pull")
-                cmd.Dir =  config.Section("services").Key(*res.Repo.FullName).String()
-                cmd.Start()
+                cmd.Dir = config.Section("services").Key(*res.Repo.FullName).String()
+                cmd.Stdout = os.Stdout
+                cmd.Stderr = os.Stderr
+                cmd.Run()
             }
         }
     })
