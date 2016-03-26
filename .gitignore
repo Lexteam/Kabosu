@@ -116,3 +116,6 @@ _testmain.go
 *.test
 *.prof
 
+
+### Kabosu ###
+config.ini
