@@ -6,9 +6,9 @@ Kabosu
 
 Kabosu is a web application that handles our web services.
 
-## Features
+## Workflow
 
-- git pulls on GitHub webhook.
+![Workflow](http://www.lexteam.xyz/assets/img/kaboso-workflow.png)
 
 ## License
 
