@@ -22,13 +22,22 @@ func GetWebhook(ctx *macaron.Context) {
         log.Println(*res.Repo.FullName)
 
         if (modules.CONFIG.Section("services").HasKey(*res.Repo.FullName)) {
-            log.Println(modules.CONFIG.Section("services").Key(*res.Repo.FullName).String())
+            var dir = modules.CONFIG.Section("services").Key(*res.Repo.FullName).String()
+            log.Println(dir)
 
             cmd := exec.Command("git", "pull")
-            cmd.Dir = modules.CONFIG.Section("services").Key(*res.Repo.FullName).String()
+            cmd.Dir = dir
             cmd.Stdout = os.Stdout
             cmd.Stderr = os.Stderr
             cmd.Run()
+
+            if _, err := os.Stat(dir + "/kabosu.sh"); err == nil {
+                cmd := exec.Command("./kabosu.sh")
+                cmd.Dir = dir
+                cmd.Stdout = os.Stdout
+                cmd.Stderr = os.Stderr
+                cmd.Run()
+            }
         }
     }
 }
