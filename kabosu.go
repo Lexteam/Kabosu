@@ -13,6 +13,9 @@ func main() {
     // Initialise config
     modules.InitConfig()
 
+    // Initialise database
+    modules.InitDatabase()
+
     // Macaron
     m := macaron.Classic()
 

@@ -120,3 +120,4 @@ _testmain.go
 ### Kabosu ###
 config.ini
 kabosu
+kabosu.db
