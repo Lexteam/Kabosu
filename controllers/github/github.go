@@ -19,10 +19,10 @@ func GetWebhook(ctx *macaron.Context) {
         var res github.PushEvent
         json.Unmarshal(body, &res)
 
-        log.Println(*res.Repo.FullName)
+        log.Println("github:" + *res.Repo.FullName)
 
-        if (modules.CONFIG.Section("services").HasKey(*res.Repo.FullName)) {
-            var dir = modules.CONFIG.Section("services").Key(*res.Repo.FullName).String()
+        if (modules.CONFIG.Section("services").HasKey("github:" + *res.Repo.FullName)) {
+            var dir = modules.CONFIG.Section("services").Key("github:" + *res.Repo.FullName).String()
             log.Println(dir)
 
             cmd := exec.Command("git", "pull")
