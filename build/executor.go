@@ -1,23 +1,26 @@
 package build
 
 import (
-    "os"
     "log"
+    "bytes"
     "os/exec"
     "github.com/lexteam/kabosu/models"
+    "github.com/lexteam/kabosu/modules"
     "gopkg.in/ini.v1"
 )
 
-func ExecuteBuild(id string) {
+func ExecuteBuild(id string) bool {
     // Check if the repository exists.
     service := models.GetService(id)
     if service.ID != -1 {
         log.Println(service.Directory)
 
+        cmdOutput := &bytes.Buffer{}
+
         cmd := exec.Command("git", "pull")
         cmd.Dir = service.Directory
-        cmd.Stdout = os.Stdout
-        cmd.Stderr = os.Stderr
+        cmd.Stdout = cmdOutput
+        cmd.Stderr = cmdOutput
         cmd.Run()
 
         var config = readConfig(service.Directory)
@@ -30,13 +33,19 @@ func ExecuteBuild(id string) {
                 if stages.HasKey("build") {
                     cmd := exec.Command(stages.Key("build").String())
                     cmd.Dir = service.Directory
-                    cmd.Stdout = os.Stdout
-                    cmd.Stderr = os.Stderr
+                    cmd.Stdout = cmdOutput
+                    cmd.Stderr = cmdOutput
                     cmd.Run()
                 }
             }
         }
+        modules.DB.Create(&models.Build{
+            Log: string(cmdOutput.Bytes()),
+            Service: service,
+        })
+        return true
     }
+    return false
 }
 
 func readConfig(dir string) *ini.File {
