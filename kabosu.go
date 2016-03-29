@@ -4,6 +4,7 @@ import (
     "log"
     "net/http"
     "github.com/lexteam/kabosu/modules"
+    "github.com/lexteam/kabosu/models"
     githubController "github.com/lexteam/kabosu/controllers/github"
     gogsController "github.com/lexteam/kabosu/controllers/gogs"
     "gopkg.in/macaron.v1"
@@ -15,6 +16,7 @@ func main() {
 
     // Initialise database
     modules.InitDatabase()
+    models.AutoMigrate()
 
     // Macaron
     m := macaron.Classic()
