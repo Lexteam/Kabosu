@@ -19,7 +19,13 @@ func InitDatabase() {
     case "sqlite":
         DB, err = gorm.Open("sqlite3", CONFIG.Section("database").Key("PATH").String())
     case "mysql":
-    // TODO: mysql
+        DB, err = gorm.Open("mysql",
+            CONFIG.Section("database").Key("USER").String() +
+            ":" +
+            CONFIG.Section("database").Key("PASS").String() +
+            "@tcp(" + CONFIG.Section("database").Key("HOST").String() + ")/" +
+            CONFIG.Section("database").Key("NAME").String() +
+            "?charset=utf8&parseTime=True")
     }
 
     if err != nil {
