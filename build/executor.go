@@ -1,19 +1,23 @@
 package build
 
 import (
+    "os"
     "log"
     "bytes"
     "os/exec"
+    "path/filepath"
     "github.com/lexteam/kabosu/models"
     "github.com/lexteam/kabosu/modules"
     "gopkg.in/ini.v1"
 )
 
-func ExecuteBuild(id string) bool {
+func ExecuteBuild(id string, buildID string) bool {
     // Check if the repository exists.
     service := models.GetService(id)
     if service.ID != -1 {
         log.Println(service.Directory)
+        // create storage dir (for artifacts)
+        createStorageDir(buildID)
 
         cmdOutput := &bytes.Buffer{}
 
@@ -39,6 +43,7 @@ func ExecuteBuild(id string) bool {
                 }
             }
         }
+
         modules.DB.Create(&models.Build{
             Log: string(cmdOutput.Bytes()),
             Service: service,
@@ -46,6 +51,10 @@ func ExecuteBuild(id string) bool {
         return true
     }
     return false
+}
+
+func createStorageDir(buildID string) {
+    os.Mkdir(modules.CONFIG.Section("storage").Key("DIR").String() + string(filepath.Separator) + buildID, 0777)
 }
 
 func readConfig(dir string) *ini.File {

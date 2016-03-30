@@ -8,5 +8,6 @@ func AutoMigrate() {
     modules.DB.AutoMigrate(
         &Service{},
         &Build{},
+        &Artifact{},
     )
 }

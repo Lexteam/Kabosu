@@ -16,5 +16,5 @@ func GetWebhook(ctx *macaron.Context) {
     json.Unmarshal(body, &res)
 
     log.Println("gogs:" + *res.Repo.FullName)
-    build.ExecuteBuild("gogs:" + *res.Repo.FullName)
+    build.ExecuteBuild("gogs:" + *res.Repo.FullName, *res.HeadCommit.SHA)
 }

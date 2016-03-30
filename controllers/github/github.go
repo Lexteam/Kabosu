@@ -18,6 +18,6 @@ func GetWebhook(ctx *macaron.Context) {
         json.Unmarshal(body, &res)
 
         log.Println("github:" + *res.Repo.FullName)
-        build.ExecuteBuild("github:" + *res.Repo.FullName)
+        build.ExecuteBuild("github:" + *res.Repo.FullName, *res.HeadCommit.SHA)
     }
 }
