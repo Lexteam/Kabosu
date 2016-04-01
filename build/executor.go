@@ -8,6 +8,7 @@ import (
     "path/filepath"
     "github.com/lexteam/kabosu/models"
     "github.com/lexteam/kabosu/modules"
+    "github.com/lexteam/kabosu/utils"
     "gopkg.in/ini.v1"
 )
 
@@ -42,19 +43,44 @@ func ExecuteBuild(id string, buildID string) bool {
                     cmd.Run()
                 }
             }
-        }
 
-        modules.DB.Create(&models.Build{
-            Log: string(cmdOutput.Bytes()),
-            Service: service,
-        })
+            var build models.Build = models.Build{
+                Log: string(cmdOutput.Bytes()),
+                Service: service,
+            }
+            modules.DB.Create(&build)
+
+            artifacts, err := config.GetSection("artifacts")
+            if err != nil {
+                if artifacts.HasKey("download") {
+                    utils.CopyFile(service.Directory + string(filepath.Separator) + artifacts.Key("download").String(),
+                        getStorageDir(buildID) + string(filepath.Separator) + artifacts.Key("download").String())
+
+                    modules.DB.Create(&models.Artifact{
+                        Name: artifacts.Key("download").String(),
+                        Location: getStorageDir(buildID) +
+                            string(filepath.Separator) + artifacts.Key("download").String(),
+                        Build: build,
+                    })
+                }
+            }
+        } else {
+            modules.DB.Create(&models.Build{
+                Log: string(cmdOutput.Bytes()),
+                Service: service,
+            })
+        }
         return true
     }
     return false
 }
 
 func createStorageDir(buildID string) {
-    os.Mkdir(modules.CONFIG.Section("storage").Key("DIR").String() + string(filepath.Separator) + buildID, 0777)
+    os.Mkdir(getStorageDir(buildID), 0777)
+}
+
+func getStorageDir(buildID string) string {
+    return modules.CONFIG.Section("storage").Key("DIR").String() + string(filepath.Separator) + buildID
 }
 
 func readConfig(dir string) *ini.File {
