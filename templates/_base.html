@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Kabosu Build Server</title>
+
+    <!-- UIKit -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/2.26.2/css/uikit.min.css" />
+</head>
+<body>
+
+<nav class="uk-navbar">
+    <a href="/" class="uk-navbar-brand">Kabosu</a>
+    <ul class="uk-navbar-nav">
+        <li><a href="/">Dashboard</a></li>
+        <li><a href="/explore">Explore</a></li>
+    </ul>
+</nav>
+
+{% block content %}{% endblock %}
+
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>
+
+<!-- UIKit -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/2.26.2/js/uikit.min.js"></script>
+
+{% block javascript %}{% endblock %}
+
+</body>
+</html>

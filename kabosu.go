@@ -7,6 +7,8 @@ import (
     "github.com/lexteam/kabosu/models"
     githubController "github.com/lexteam/kabosu/controllers/github"
     gogsController "github.com/lexteam/kabosu/controllers/gogs"
+    webController "github.com/lexteam/kabosu/controllers/web"
+    "github.com/go-macaron/pongo2"
     "gopkg.in/macaron.v1"
 )
 
@@ -20,6 +22,11 @@ func main() {
 
     // Macaron
     m := macaron.Classic()
+    m.Use(pongo2.Pongoer())
+
+    // User interface
+    m.Get("/", webController.GetDashboard)
+    m.Get("/explore", webController.GetExplore)
 
     // Webhook
     m.Group("/webhook", func () {
